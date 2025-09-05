@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  kg-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: climate-policy-radar-mcp
+    ports:
+      - "8000:8000"
+    environment:
+      # Dataset configuration
+      - DATASET_REPO=ClimatePolicyRadar/all-document-text-data
+      - DATASET_REVISION=main
+      
+      # SPARQL endpoint
+      - SPARQL_ENDPOINT=https://climatepolicyradar.wikibase.cloud/query/sparql
+      
+      # Server configuration
+      - PORT=8000
+      - TRANSPORT=http
+      
+      # Optional: HuggingFace token for private datasets
+      # - HF_TOKEN=your_token_here
+      
+      # Optional: Authentication (uncomment to enable)
+      # - FASTMCP_SERVER_AUTH=AZURE
+      # - AZURE_CLIENT_ID=your_client_id
+      # - AZURE_TENANT_ID=your_tenant_id
+      
+    volumes:
+      # Persistent cache for downloaded data
+      - ./cache:/data/cache
+      
+      # Optional: Mount local development code for hot reload
+      # - ./server:/app/server:ro
+      
+    restart: unless-stopped
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
+    
+    # Logging configuration
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Network configuration
+    networks:
+      - mcp-network
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  mcp-network:
+    driver: bridge
+
+# Optional: Add additional services like monitoring, auth proxy, etc.
+# prometheus:
+#   image: prom/prometheus:latest
+#   ...
+# 
+# grafana:
+#   image: grafana/grafana:latest
+#   ...

@@ -1,0 +1,25 @@
+[project]
+name = "kg-mcp"
+version = "0.1.0"
+description = "Climate Policy Radar MCP Server - Exposes climate law & policy knowledge graph to agentic clients"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastmcp>=2.11.0",
+    "duckdb>=1.0.0",
+    "huggingface-hub>=0.20.0",
+    "pydantic>=2.5.0",
+    "httpx>=0.25.0",
+    "pandas>=2.0.0",
+    "networkx>=3.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
